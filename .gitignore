@@ -43,12 +43,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
 # Custom
 TODO.md
 .vscode
 .idea
-.dart_tool# Custom
-TODO.md
-.vscode
-.idea
 .dart_tool
+**/*.g.dart
+**/*.mapper.dart
