@@ -1,33 +1,16 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:innsikt/src/features/stortinget/data/stortinget_call_adapter.dart';
-import 'package:innsikt/src/features/stortinget/domain/case_list.dart';
-import 'package:innsikt/src/features/stortinget/domain/detailed_case.dart';
+import 'package:innsikt/src/features/stortinget/domain/case/case_list.dart';
+import 'package:innsikt/src/features/stortinget/domain/case/detailed_case.dart';
 import 'package:innsikt/src/features/stortinget/domain/party_list.dart';
 import 'package:innsikt/src/features/stortinget/domain/sessions.dart';
 import 'package:innsikt/src/features/stortinget/domain/storting_periods.dart';
 import 'package:retrofit/retrofit.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:http_cache_file_store/http_cache_file_store.dart';
 
 part 'stortinget_repository.g.dart';
-
-class TestLogger extends Interceptor {
-  @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
-    print(err);
-    handler.next(err);
-  }
-
-  // @override
-  // void onResponse(Response response, ResponseInterceptorHandler handler) {
-  //   print("Response");
-  //   print(response);
-  //   handler.next(response);
-  // }
-}
 
 @RestApi(
   baseUrl: 'https://data.stortinget.no/eksport/',
@@ -45,15 +28,13 @@ abstract class StortingetRepository {
     print("-" * logWidth);
     final dio = Dio(BaseOptions(queryParameters: {'format': 'JSON'}))
       ..interceptors.addAll([
-        TestLogger(),
-
-        // PrettyDioLogger(
-        //   request: true,
-        //   requestBody: true,
-        //   // responseBody: false,
-        //   error: true,
-        //   maxWidth: logWidth - 12,
-        // ),
+        PrettyDioLogger(
+          request: true,
+          requestBody: true,
+          responseBody: false,
+          error: true,
+          maxWidth: logWidth - 12,
+        ),
         DioCacheInterceptor(
           options: CacheOptions(
             store: FileCacheStore('./cache'),
@@ -93,15 +74,15 @@ abstract class StortingetRepository {
   @GET('/sesjoner')
   Future<Sessions> getSessions();
 
-  // /// If [sessionId] is null, the latest session is used.
-  // @GET('/saker')
-  // Future<CaseList> getCases({@Query('sesjonid') String? sessionId});
+  /// If [sessionId] is null, the latest session is used.
+  @GET('/saker')
+  Future<CaseList> getCases({@Query('sesjonid') String? sessionId});
 
-  // @GET('/sak')
-  // Future<DetailedCase> getDetailedCase(@Query('sakid') int caseId);
+  @GET('/sak')
+  Future<DetailedCase> getDetailedCase(@Query('sakid') int caseId);
 
-  // @GET('/allekomiteer')
-  // Future<CaseList> getAllCommittees();
+  @GET('/allekomiteer')
+  Future<CaseList> getAllCommittees();
 
   // @GET('/personbilde')
   // Future<File> _getProfile({

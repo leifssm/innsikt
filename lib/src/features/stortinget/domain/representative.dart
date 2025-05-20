@@ -1,0 +1,56 @@
+import 'package:dart_mappable/dart_mappable.dart';
+import 'package:innsikt/src/features/stortinget/domain/county.dart';
+import 'package:innsikt/src/features/stortinget/domain/mappable_hooks.dart';
+import 'package:innsikt/src/features/stortinget/domain/party.dart';
+
+part 'representative.mapper.dart';
+
+@MappableEnum()
+enum Gender {
+  @MappableValue(1) female,
+  @MappableValue(2) male;
+}
+
+@MappableClass()
+class Representative with RepresentativeMappable {
+  @MappableField(key: 'id')
+  final String id;
+
+  @MappableField(key: 'doedsdato', hook: DateTranslator())
+  final DateTime? deathDate;
+
+  @MappableField(key: 'etternavn')
+  final String lastName;
+
+  @MappableField(key: 'foedselsdato', hook: DateTranslator())
+  final DateTime birthDate;
+
+  @MappableField(key: 'fornavn')
+  final String firstName;
+
+  @MappableField(key: 'fylke')
+  final County county;
+  
+  @MappableField(key: 'parti')
+  final Party party;
+  
+  @MappableField(key: 'vara_representant')
+  final bool isVaraRepresentative;
+  
+  @MappableField(key: 'kjoenn')
+  final Gender gender;
+
+  const Representative({
+    required this.id,
+    required this.deathDate,
+    required this.lastName,
+    required this.birthDate,
+    required this.firstName,
+    required this.county,
+    required this.party,
+    required this.isVaraRepresentative,
+    required this.gender,
+  });
+
+  static final fromJson = RepresentativeMapper.fromJson;
+}

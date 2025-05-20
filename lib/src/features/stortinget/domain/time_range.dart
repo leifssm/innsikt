@@ -1,5 +1,5 @@
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:innsikt/src/features/stortinget/domain/date_translator.dart';
+import 'package:innsikt/src/features/stortinget/domain/mappable_hooks.dart';
 
 part 'time_range.mapper.dart';
 
