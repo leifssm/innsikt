@@ -45,7 +45,7 @@ abstract class StortingetRepository {
 
               for (var i = 0; i < entries.length; i++) {
                 final entry = entries[i];
-                key += (i == 0) ? '@' : '&';
+                key += (i == 0) ? '/' : '&';
                 key += '${entry.key}=${entry.value}';
               }
 

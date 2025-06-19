@@ -31,6 +31,12 @@ class Fluid<T> {
   static Fluid<T> loading<T>() {
     return Fluid<T>._(status: FluidStatus.loading);
   }
+  static Rx<Fluid<T>> init<T>([T? initialData]) {
+    if (initialData != null) {
+      return Fluid.success<T>(initialData).obs;
+    }
+    return Fluid.loading<T>().obs;
+  }
 }
 
 extension GetAsyncExtension<T> on Rx<Fluid<T>> {
@@ -42,8 +48,8 @@ extension GetAsyncExtension<T> on Rx<Fluid<T>> {
   Object? get error => value.error;
   StackTrace? get stackTrace => value.stackTrace;
 
-  Future<void> updateAsync(Future<T> Function() future) async {
-    value = Fluid.loading();
+  Future<void> updateAsync(Future<T> Function() future, [bool keepOld = false]) async {
+    if (!keepOld) value = Fluid.loading();
     try {
       value = Fluid.success(await future());
     } catch (e, stack) {

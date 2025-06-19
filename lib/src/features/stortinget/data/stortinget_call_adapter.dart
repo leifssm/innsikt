@@ -1,10 +1,13 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:dio/dio.dart';
+import 'package:logger/web.dart';
 import 'package:retrofit/call_adapter.dart';
 
 part 'stortinget_call_adapter.mapper.dart';
 
 class StortingetCallAdapter<T> extends CallAdapter<Future<T>, Future<T>> {
+  final logger = Logger();
+
   @override
   Future<T> adapt(Future<T> Function() call) async {
     try {
@@ -12,6 +15,9 @@ class StortingetCallAdapter<T> extends CallAdapter<Future<T>, Future<T>> {
     } on DioException catch (e) {
       if (e.response == null) rethrow;
       throw StortingetError.fromJson(e.response!.data);
+    } catch (e) {
+      logger.f('Unexpected error during Stortinget API call: $e', stackTrace: StackTrace.empty);
+      rethrow;
     }
   }
 }

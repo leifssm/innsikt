@@ -5,16 +5,16 @@ import 'package:innsikt/src/features/stortinget/domain/case/case.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/case_list.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/detailed_case.dart';
 import 'package:innsikt/src/features/stortinget/domain/party_list.dart';
-import 'package:innsikt/src/utils/fluid.dart';
+import 'package:innsikt/src/utils/extensions/getx.dart';
+import 'package:innsikt/src/features/fluid/domain/fluid.dart';
 
 class HomePageController extends GetxController {
   final title = 'Hello World'.obs;
   final cases = Fluid.loading<CaseList>().obs;
   final parties = Fluid.loading<PartyList>().obs;
-  final repository = StortingetRepository.create();
 
   void fetch1() async {
-    parties.updateAsync(repository.getAllParties);
+    parties.updateAsync(stortinget.getAllParties);
   }
 
   String get str1 {
@@ -24,7 +24,7 @@ class HomePageController extends GetxController {
   }
 
   void fetch2() async {
-    await cases.updateAsync(repository.getCases);
+    await cases.updateAsync(stortinget.getCases);
   }
 
   String get str2 {
@@ -40,6 +40,7 @@ class HomePage extends GetView<HomePageController> {
   @override
   Widget build(BuildContext context) {
     Get.put(HomePageController());
+    Get.put(StortingetRepository.create());
 
     return Scaffold(
       body: Column(

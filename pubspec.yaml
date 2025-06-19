@@ -42,6 +42,9 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   dio_cache_interceptor: ^4.0.3
   http_cache_file_store: ^2.0.1
+  url_launcher: ^6.3.1
+  timelines_plus: ^1.0.7
+  fl_chart: ^1.0.0
 
 dev_dependencies:
   flutter_test:

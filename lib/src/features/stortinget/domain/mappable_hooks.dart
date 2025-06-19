@@ -38,7 +38,7 @@ class DateTranslator extends MappingHook {
 class FlipBool extends MappingHook {
   const FlipBool();
   
-  _flip(Object? value) {
+  bool _flip(Object? value) {
     if (value is! bool) throw ArgumentError('Value must be a bool');
     return !value;
   }
