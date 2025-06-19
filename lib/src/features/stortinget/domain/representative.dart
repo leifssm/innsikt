@@ -7,8 +7,16 @@ part 'representative.mapper.dart';
 
 @MappableEnum()
 enum Gender {
-  @MappableValue(1) female,
-  @MappableValue(2) male;
+  @MappableValue(1)
+  female('Kvinne'),
+  @MappableValue(2)
+  male('Mann');
+
+  final String name;
+  const Gender(this.name);
+
+  @override
+  String toString() => name;
 }
 
 @MappableClass()
@@ -30,13 +38,13 @@ class Representative with RepresentativeMappable {
 
   @MappableField(key: 'fylke')
   final County county;
-  
+
   @MappableField(key: 'parti')
   final Party party;
-  
+
   @MappableField(key: 'vara_representant')
-  final bool isVaraRepresentative;
-  
+  final bool isVara;
+
   @MappableField(key: 'kjoenn')
   final Gender gender;
 
@@ -48,7 +56,7 @@ class Representative with RepresentativeMappable {
     required this.firstName,
     required this.county,
     required this.party,
-    required this.isVaraRepresentative,
+    required this.isVara,
     required this.gender,
   });
 

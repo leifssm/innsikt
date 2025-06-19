@@ -3,8 +3,11 @@ import 'package:innsikt/src/features/stortinget/data/stortinget_call_adapter.dar
 import 'package:innsikt/src/features/stortinget/domain/case/case_list.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/detailed_case.dart';
 import 'package:innsikt/src/features/stortinget/domain/party_list.dart';
+import 'package:innsikt/src/features/stortinget/domain/picture_size.dart';
 import 'package:innsikt/src/features/stortinget/domain/sessions.dart';
 import 'package:innsikt/src/features/stortinget/domain/storting_periods.dart';
+import 'package:innsikt/src/features/stortinget/domain/voting/voting.dart';
+import 'package:innsikt/src/features/stortinget/domain/voting/voting_result.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
@@ -103,4 +106,25 @@ abstract class StortingetRepository {
 
   @GET('/personbilde')
   Future<Sessions> getError();
+
+  @GET('/voteringsresultat')
+  Future<VotingResult> getVotingResults(@Query('voteringid') int voteId);
+
+  @GET('/voteringer')
+  Future<Voting> getVotingsForCase(@Query('sakid') int caseId);
+}
+
+String getProfileUrl({
+  required String personId,
+  required PictureSize size,
+  bool? defaultPicture,
+}) {
+  final query = <String, dynamic>{
+    'personid': personId,
+    'storrelse': size.value,
+  };
+  if (defaultPicture != null) {
+    query['erstatningsbilde'] = defaultPicture.toString();
+  }
+  return 'https://data.stortinget.no/eksport/personbilde?${Uri(queryParameters: query).query}';
 }

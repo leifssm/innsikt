@@ -5,6 +5,7 @@ import 'package:innsikt/src/features/stortinget/domain/case/case.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/case_list.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/detailed_case.dart';
 import 'package:innsikt/src/features/stortinget/domain/party_list.dart';
+import 'package:innsikt/src/features/stortinget/presentation/infinite_case_view.dart';
 import 'package:innsikt/src/utils/extensions/getx.dart';
 import 'package:innsikt/src/features/fluid/domain/fluid.dart';
 
@@ -43,22 +44,14 @@ class HomePage extends GetView<HomePageController> {
     Get.put(StortingetRepository.create());
 
     return Scaffold(
-      body: Column(
-        children: [
-          Obx(
-            () => TextButton(
-              onPressed: controller.fetch1,
-              child: Text(controller.str1),
-            ),
+      body: 
+          InfiniteCaseView(
+            // cases: controller.cases,
+            // onTap: (Case c) async {
+            //   final detailedCase = await controller.repository.getDetailedCase(c.id);
+            //   Get.to(() => DetailedCaseView(detailedCase: detailedCase));
+            // },
           ),
-          Obx(
-            () => TextButton(
-              onPressed: controller.fetch2,
-              child: Text(controller.str2),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

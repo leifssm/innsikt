@@ -52,7 +52,7 @@ class DetailedCase with DetailedCaseMappable {
   )
   final List<Representative> proposers;
 
-  /// Element som definerer komite som evt behanlder saken
+  /// Element som definerer komite som evt behandler saken
   @MappableField(key: 'komite')
   final Committee? committee;
 
@@ -66,15 +66,15 @@ class DetailedCase with DetailedCaseMappable {
 
   /// Element som definerer innstillingsteksten for saken
   @MappableField(key: 'innstillingstekst')
-  final String recommendationText;
+  final String? recommendationText;
 
   /// Element som definerer kortvedtakstekst for saken
   @MappableField(key: 'kortvedtak')
-  final String decisionSummary;
+  final String? decisionSummary;
 
   /// Element som definerer vedtakstekst for saken
   @MappableField(key: 'parentestekst')
-  final String parenthesisText;
+  final String? parenthesisText;
 
   /// Inneholder elementer for publikasjonsreferanser for saken
   @MappableField(key: 'publikasjon_referanse_liste')
@@ -102,7 +102,7 @@ class DetailedCase with DetailedCaseMappable {
 
   /// Element som definerer vedtakstekst for saken
   @MappableField(key: 'vedtakstekst')
-  final String decisionText;
+  final String? decisionText;
 
   DetailedCase({
     required this.id,

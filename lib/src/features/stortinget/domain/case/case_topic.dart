@@ -11,7 +11,7 @@ class CaseTopic with CaseTopicMappable {
   final bool primaryTopic;
 
   @MappableField(key: 'navn')
-  final String navn;
+  final String name;
 
   /// Element som definerer underemne_liste for saken
   @MappableField(key: 'underemne_liste')
@@ -20,7 +20,7 @@ class CaseTopic with CaseTopicMappable {
   const CaseTopic({
     required this.id,
     required this.primaryTopic,
-    required this.navn,
+    required this.name,
     required this.subTopics,
   });
 

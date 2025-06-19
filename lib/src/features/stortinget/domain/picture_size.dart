@@ -9,4 +9,6 @@ enum PictureSize {
   final String value;
   
   const PictureSize(this.value);
+  @override
+  String toString() => value;
 }

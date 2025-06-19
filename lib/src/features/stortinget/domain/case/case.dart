@@ -6,69 +6,93 @@ import 'package:innsikt/src/features/stortinget/domain/representative.dart';
 
 part 'case.mapper.dart';
 
-
 @MappableEnum()
 enum CaseType {
-  /// budsjett
-  @MappableValue(1) budget,
-  /// lovsak
-  @MappableValue(2) lawCase,
-  /// alminneligsak
-  @MappableValue(3) ordinaryCase;
-}
+  @MappableValue(1)
+  budget("budsjett"),
+  @MappableValue(2)
+  lawCase("lovsak"),
+  @MappableValue(3)
+  ordinaryCase("alminneligsak");
 
+  final String name;
+  const CaseType(this.name);
+
+  @override
+  String toString() => name;
+}
 
 @MappableEnum()
 enum CaseStatus {
-  /// varlset
-  @MappableValue(1) notified,
-  /// mottatt
-  @MappableValue(2) recieved,
-  /// til_behandling
-  @MappableValue(3) inProgress,
-  /// behandlet
-  @MappableValue(4) processed,
-  /// trukket
-  @MappableValue(5) withdrawn,
-  /// bortfalt
-  @MappableValue(6) lapsed,
-  /// API spesifiserer ikke
-  @MappableValue(7) unspecified;
-}
+  @MappableValue(1)
+  notified("varlset"),
+  @MappableValue(2)
+  recieved("mottatt"),
+  @MappableValue(3)
+  inProgress("til_behandling"),
+  @MappableValue(4)
+  processed("behandlet"),
+  @MappableValue(5)
+  withdrawn("trukket"),
+  @MappableValue(6)
+  lapsed("bortfalt"),
+  @MappableValue(7)
+  unspecified("API spesifiserer ikke");
 
+  final String name;
+  const CaseStatus(this.name);
+
+  @override
+  String toString() => name;
+}
 
 @MappableEnum()
 enum CaseDocumentGroup {
-  @MappableValue(0) idfk,
-  /// proposisjon
-  @MappableValue(1) proposition,
-  /// melding
-  @MappableValue(2) report,
-  /// redegjoerelse
-  @MappableValue(3) statement,
-  /// representantforslag
-  @MappableValue(4) privateMemberBill,
-  /// dokumentserien
-  @MappableValue(5) documentSeries,
-  /// innstillingssaker
-  @MappableValue(6) recommendationCases,
-  /// innberetning
-  @MappableValue(7) reportSummary,
-  @MappableValue(8) idfk1;
+  @MappableValue(0)
+  idfk("idfk"),
+  @MappableValue(1)
+  proposition("proposisjon"),
+  @MappableValue(2)
+  report("melding"),
+  @MappableValue(3)
+  statement("redegjoerelse"),
+  @MappableValue(4)
+  privateMemberBill("representantforslag"),
+  @MappableValue(5)
+  documentSeries("dokumentserien"),
+  @MappableValue(6)
+  recommendationCases("innstillingssaker"),
+  @MappableValue(7)
+  reportSummary("innberetning"),
+  @MappableValue(8)
+  idfk1("idfk1");
 
+  final String name;
+  const CaseDocumentGroup(this.name);
+
+  @override
+  String toString() => name;
 }
-
 
 @MappableEnum()
 enum RecommendationCode {
-  @MappableValue(0) idfk,
+  @MappableValue(0)
+  idfk("idfk"),
+
   /// Innstilling til Stortinget. Komiteens innstillinger om alminnelige saker og budsjettsaker.
-  @MappableValue(1) recommendationStortinget,
+  @MappableValue(1)
+  recommendationStortinget("recommendationStortinget"),
+
   /// Innstilling til Stortinget (lovvedtak). Komiteenes innstillinger om lovvedtak.
-  @MappableValue(2) recommendationLaw;
+  @MappableValue(2)
+  recommendationLaw("recommendationLaw");
+
+  final String name;
+  const RecommendationCode(this.name);
+
+  @override
+  String toString() => name;
 }
-
-
 
 @MappableClass()
 class Case with CaseMappable {
@@ -93,7 +117,7 @@ class Case with CaseMappable {
   /// Element som definerer henvisning for saken
   @MappableField(key: 'henvisning')
   final String? referral;
-  
+
   /// Element som definerer identifikator for sesjonen der saken ble behandlet
   @MappableField(key: 'behandlet_sesjon_id')
   final String? sessionId;
@@ -105,23 +129,26 @@ class Case with CaseMappable {
   /// Element som definerer dokumentgruppe for saken
   @MappableField(key: 'dokumentgruppe')
   final CaseDocumentGroup documentGroup;
-  
+
   /// Inneholder elementer for alle emner som saken er assosiert med
   @MappableField(key: 'emne_liste')
   final List<CaseTopic> topics;
-  
+
   /// Inneholder elementer for alle representanter som er forslagstillere dersom det er relevant for saken
-  @MappableField(key: 'forslagstiller_liste', hook: DefaultValue(<Representative>[]))
+  @MappableField(
+    key: 'forslagstiller_liste',
+    hook: DefaultValue(<Representative>[]),
+  )
   final List<Representative> proposers;
-  
+
   /// Element som definerer identifikator for instillingen
   @MappableField(key: 'innstilling_id')
   final int recommendationId;
-  
+
   /// Element som definerer innstillingskode
   @MappableField(key: 'innstilling_kode')
   final RecommendationCode recommendationCode;
-  
+
   /// Element som definerer komite som evt behanlder saken
   @MappableField(key: 'komite')
   final Committee? committee;
