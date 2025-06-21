@@ -1,15 +1,16 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:innsikt/src/features/stortinget/domain/representative.dart';
+import 'package:innsikt/src/features/stortinget/domain/vara_representative.dart';
 
 part 'representative_voting_result.mapper.dart';
 
 @MappableEnum()
 enum VoteType {
-  @MappableValue('for')
+  @MappableValue(1)
   forVote("for"),
-  @MappableValue('mot')
+  @MappableValue(2)
   against("mot"),
-  @MappableValue('ikke_tilstede')
+  @MappableValue(3)
   absent("ikke_tilstede");
 
   final String name;
@@ -25,10 +26,10 @@ class RepresentativeVotingResult with RepresentativeVotingResultMappable {
   final Representative representative;
 
   @MappableField(key: 'vara_for')
-  final Representative? deputyFor;
+  final VaraRepresentative? deputyFor;
 
   @MappableField(key: 'fast_vara_for')
-  final Representative? permanentDeputyFor;
+  final VaraRepresentative? permanentDeputyFor;
 
   @MappableField(key: 'votering')
   final VoteType vote;

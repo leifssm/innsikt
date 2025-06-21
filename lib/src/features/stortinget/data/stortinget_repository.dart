@@ -107,11 +107,11 @@ abstract class StortingetRepository {
   @GET('/personbilde')
   Future<Sessions> getError();
 
-  @GET('/voteringsresultat')
-  Future<VotingResult> getVotingResults(@Query('voteringid') int voteId);
-
   @GET('/voteringer')
   Future<Voting> getVotingsForCase(@Query('sakid') int caseId);
+
+  @GET('/voteringsresultat')
+  Future<VotingResult> getVotingResults(@Query('voteringid') int voteId);
 }
 
 String getProfileUrl({

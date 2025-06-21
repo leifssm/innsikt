@@ -28,17 +28,17 @@ enum VotingMethod {
 /// Dette er såkalt faste koder som kan benyttes i stedet for vanlig votering med bruk av voteringsknapper:
 @MappableEnum()
 enum VoteResultType {
-  @MappableValue(1)
+  @MappableValue(0)
   manual("manuell"),
-  @MappableValue(2)
+  @MappableValue(1)
   unanimouslyAdopted("enstemmig_vedtatt"),
-  @MappableValue(3)
+  @MappableValue(2)
   adoptedAgaintNVotes("vedtatt_mot_N_stemmer"),
-  @MappableValue(4)
+  @MappableValue(3)
   rejectedAgaintNVotes("forkastet_mot_N_stemmer"),
-  @MappableValue(5)
+  @MappableValue(4)
   adoptedWithPresidentialDoublevote("vedtatt_med_president_dobbeltstemme"),
-  @MappableValue(6)
+  @MappableValue(5)
   rejectedWithPresidentialDoublevote("forkastet_med_president_dobbeltstemme");
 
   final String name;

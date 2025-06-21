@@ -2,25 +2,12 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:innsikt/src/features/stortinget/domain/county.dart';
 import 'package:innsikt/src/features/stortinget/domain/mappable_hooks.dart';
 import 'package:innsikt/src/features/stortinget/domain/party.dart';
+import 'package:innsikt/src/features/stortinget/domain/representative.dart';
 
-part 'representative.mapper.dart';
-
-@MappableEnum()
-enum Gender {
-  @MappableValue(1)
-  female('Kvinne'),
-  @MappableValue(2)
-  male('Mann');
-
-  final String name;
-  const Gender(this.name);
-
-  @override
-  String toString() => name;
-}
+part 'vara_representative.mapper.dart';
 
 @MappableClass()
-class Representative with RepresentativeMappable {
+class VaraRepresentative with VaraRepresentativeMappable {
   @MappableField(key: 'id')
   final String id;
 
@@ -36,31 +23,19 @@ class Representative with RepresentativeMappable {
   @MappableField(key: 'fornavn')
   final String firstName;
 
-  @MappableField(key: 'fylke')
-  final County county;
-
-  @MappableField(key: 'parti')
-  final Party party;
-
-  @MappableField(key: 'vara_representant')
-  final bool isVara;
-
   @MappableField(key: 'kjoenn')
   final Gender gender;
 
-  const Representative({
+  const VaraRepresentative({
     required this.id,
     required this.deathDate,
     required this.lastName,
     required this.birthDate,
     required this.firstName,
-    required this.county,
-    required this.party,
-    required this.isVara,
     required this.gender,
   });
 
   get fullName => '$firstName $lastName';
 
-  static final fromJson = RepresentativeMapper.fromJson;
+  static final fromJson = VaraRepresentativeMapper.fromJson;
 }
