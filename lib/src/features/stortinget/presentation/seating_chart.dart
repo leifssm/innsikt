@@ -1,56 +1,135 @@
-import 'dart:math';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:innsikt/src/features/stortinget/domain/party.dart'
+    show partyColorFromId;
+import 'package:innsikt/src/features/stortinget/domain/representative.dart';
+import 'package:innsikt/src/features/stortinget/domain/voting/representative_voting_result.dart';
+import 'package:innsikt/src/features/stortinget/presentation/seating_chart_spots.dart';
 
 class SeatingChartController extends GetxController {
   final width = 400.0;
+  double get height => width / 2;
+
   final seats = <ScatterSpot>[].obs;
+  late final List<Representative>? representatives;
+  late final List<RepresentativeVotingResult>? representativeVotingResult;
+
+  SeatingChartController({
+    List<Representative>? representatives,
+    List<RepresentativeVotingResult>? representativeVotingResult,
+  }) {
+    this.representatives =
+        representatives == null ? [] : List.from(representatives)
+          ..sort((a, b) => a.party.compareTo(b.party));
+    this.representativeVotingResult =
+        representativeVotingResult == null
+              ? []
+              : List.from(representativeVotingResult)
+          ..sort(
+            (a, b) => a.representative.party.compareTo(b.representative.party),
+          );
+  }
 
   @override
-  void onInit() {
-    super.onInit();
+  void onReady() {
+    super.onReady();
 
-    const amounts = [9, 18, 18, 26, 30, 34, 34];
-    const radius = 5.0;
-    const scaling = 0.2;
+    var i = 0;
+    seats.assignAll(
+      generatedSeats.map((seat) {
+        final (x, y) = seat;
 
-    final seatsTemp = <ScatterSpot>[];
-
-    for (var i = 0; i < amounts.length; i++) {
-      final amount = amounts[i];
-      for (var j = 0; j < amount; j++) {
-        seatsTemp.add(
-          ScatterSpot(
-            (i * scaling + 1) * cos(pi * (j / (amount - 1))).toPrecision(2),
-            (i * scaling + 1) * sin(pi * (j / (amount - 1))).toPrecision(2),
-            dotPainter: FlDotCirclePainter(radius: radius),
+        FlDotPainter painter = switch (getRepresentativeVote(i)) {
+          VoteType.forVote => FlDotCirclePainter(
+            radius: nodeSize,
+            color: getSeatColor(i),
           ),
-        );
-      }
-    }
+          VoteType.against => FlDotCrossPainter(
+            size: nodeSize * 1.3,
+            width: nodeSize / 2.5,
+            color: getSeatColor(i),
+          ),
+          VoteType.absent => FlDotCirclePainter(
+            radius: nodeSize,
+            color: getSeatColor(i).withAlpha(50),
+          ),
+        };
 
-    seats.assignAll(seatsTemp);
+        return ScatterSpot(
+          x,
+          y,
+          dotPainter: painter,
+          renderPriority: i++, // Bootleg indexing
+        );
+      }),
+    );
+  }
+
+  double get nodeSize => width / 65;
+
+  Representative? getRepresentative(int index) {
+    if (representativeVotingResult != null) {
+      return representativeVotingResult![index].representative;
+    } else if (representatives != null) {
+      return representatives![index];
+    }
+    return null; // Default if no representatives or results are available
+  }
+
+  VoteType getRepresentativeVote(int index) {
+    if (representativeVotingResult == null) return VoteType.forVote;
+    return representativeVotingResult![index].vote;
+  }
+
+  Color getSeatColor(int index) {
+    return partyColorFromId(getRepresentative(index)?.party.id);
+  }
+
+  ScatterTooltipItem? getTooltipItems(ScatterSpot spot) {
+    final rep = getRepresentative(spot.renderPriority);
+    if (rep == null) return null;
+
+    return ScatterTooltipItem('${rep.fullName} (${rep.party.id})');
   }
 }
 
 class SeatingChart extends GetView<SeatingChartController> {
-  const SeatingChart({super.key});
+  final List<Representative>? representatives;
+  final List<RepresentativeVotingResult>? representativeVotingResult;
+  const SeatingChart({
+    super.key,
+    this.representatives,
+    this.representativeVotingResult,
+  });
 
   @override
   Widget build(BuildContext context) {
-    Get.put(SeatingChartController());
-    return SizedBox(
-      width: controller.width,
-      height: controller.width / 2,
-      child: Obx(
-        () => ScatterChart(
-          ScatterChartData(
-            scatterSpots: controller.seats,
-            borderData: FlBorderData(show: false),
-            gridData: FlGridData(show: false),
-            titlesData: FlTitlesData(show: false),
+    Get.put(
+      SeatingChartController(
+        representatives: representatives,
+        representativeVotingResult: representativeVotingResult,
+      ),
+    );
+
+    return Padding(
+      padding: EdgeInsets.all(controller.nodeSize),
+      child: AspectRatio(
+        aspectRatio: 2,
+        child: Obx(
+          () => ScatterChart(
+            ScatterChartData(
+              scatterSpots: controller.seats,
+              scatterTouchData: ScatterTouchData(
+                touchTooltipData: ScatterTouchTooltipData(
+                  getTooltipItems: controller.getTooltipItems,
+                ),
+                // enabled: controller.representatives != null
+              ),
+              borderData: FlBorderData(show: false),
+              gridData: FlGridData(show: false),
+              titlesData: FlTitlesData(show: false),
+            ),
           ),
         ),
       ),

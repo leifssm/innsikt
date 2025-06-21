@@ -6,12 +6,14 @@ import 'package:innsikt/src/components/standard_scaffold.dart';
 import 'package:innsikt/src/features/fluid/presentation/loading.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/detailed_case.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/voting.dart';
+import 'package:innsikt/src/features/stortinget/domain/voting/voting_result.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/case_progress.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/reference_list.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/related_cases.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/representative_list.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/topic_list.dart';
 import 'package:innsikt/src/features/stortinget/presentation/seating_chart.dart';
+import 'package:innsikt/src/features/stortinget/presentation/voting_ratio.dart';
 import 'package:innsikt/src/utils/extensions/getx.dart';
 import 'package:innsikt/src/features/fluid/domain/fluid.dart';
 import 'package:logger/logger.dart';
@@ -21,6 +23,7 @@ class DetailedCaseViewController extends GetxController {
   final caseId = int.tryParse(Get.parameters['caseId'] ?? '');
   final detailedCase = Fluid.init<DetailedCase>();
   final voting = Fluid.init<Voting>();
+  final result = Fluid.init<VotingResult>();
 
   @override
   void onReady() {
@@ -36,7 +39,12 @@ class DetailedCaseViewController extends GetxController {
 
   void loadCase(int caseId) async {
     detailedCase.updateAsync(() => stortinget.getDetailedCase(caseId));
-    voting.updateAsync(() => stortinget.getVotingsForCase(caseId));
+    await voting.updateAsync(() => stortinget.getVotingsForCase(caseId));
+    if (!voting.isSuccess) return;
+    print('fetching');
+    print(voting.data!.caseVotings);
+    final votingId = voting.data!.caseVotings.first.votingId;
+    result.updateAsync(() => stortinget.getVotingResults(votingId));
   }
 }
 
@@ -46,7 +54,7 @@ class DetailedCaseView extends GetView<DetailedCaseViewController> {
   @override
   Widget build(BuildContext context) {
     Get.put(DetailedCaseViewController());
-    
+
     return StandardScaffold(
       title: 'Sak ${controller.caseId}',
       body: Column(
@@ -75,7 +83,9 @@ class DetailedCaseView extends GetView<DetailedCaseViewController> {
                       Text("Parantestekster: ${c.parenthesisText}"),
                       CaseProgressTimeline(progress: c.caseProgress),
                       Text("Sak opprinnelse:"),
-                      RepresentativeList(representatives: c.caseOrigin.proposers),
+                      RepresentativeList(
+                        representatives: c.caseOrigin.proposers,
+                      ),
                       ReferenceList(references: c.publicationReferences),
                       Text("Relaterte saker:"),
                       RelatedCaseList(cases: c.relatedCases),
@@ -85,8 +95,16 @@ class DetailedCaseView extends GetView<DetailedCaseViewController> {
                   ),
             ),
           ),
-          Loading(value: controller.voting, builder: (v) => Text(v.toString())),
-          SeatingChart()
+          // Loading(value: controller.voting, builder: (v) => Text(v.toString())),
+          Loading(
+            value: controller.result,
+            builder: (r) => (
+              VotingRatio(
+                representativeVotingResult: r.results,
+              )
+              // SeatingChart(representativeVotingResult: r.results)
+            ),
+          ),
         ],
       ),
     );
