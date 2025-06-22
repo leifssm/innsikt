@@ -98,12 +98,19 @@ class DetailedCaseView extends GetView<DetailedCaseViewController> {
           // Loading(value: controller.voting, builder: (v) => Text(v.toString())),
           Loading(
             value: controller.result,
-            builder: (r) => (
-              VotingRatio(
-                representativeVotingResult: r.results,
+            builder: (r) => 
+              Column(
+                children: [
+                  SeatingChart(
+                      representativeVotingResult: r.results,
+                    ),VotingRatio(
+                      representativeVotingResult: r.results,
+                    ),
+                  
+                ],
               )
               // SeatingChart(representativeVotingResult: r.results)
-            ),
+            ,
           ),
         ],
       ),

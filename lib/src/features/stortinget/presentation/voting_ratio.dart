@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:innsikt/src/features/stortinget/domain/party.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/representative_voting_result.dart';
+import 'package:innsikt/src/utils/extensions/units.dart';
 
 class BarDataSection {
   final int amount;
@@ -19,16 +20,21 @@ class BarDataSection {
 typedef BarDataBar = List<BarDataSection>;
 
 class VotingRatioController extends GetxController {
+  final List<RepresentativeVotingResult> representativeVotingResult;
   final forVotes = <RepresentativeVotingResult>[];
   final againstVotes = <RepresentativeVotingResult>[];
   final absentVotes = <RepresentativeVotingResult>[];
 
   final rodData = <BarDataBar>[].obs;
   final rods = <BarChartGroupData>[].obs;
+  final titles = <String>[].obs;
 
-  VotingRatioController(
-    List<RepresentativeVotingResult> representativeVotingResult,
-  ) {
+  final spacing = 20.0.obs;
+  final barWidth = 50.0;
+  double get totalWidth =>
+      (rodData.length * (barWidth + spacing.value)) - spacing.value;
+
+  VotingRatioController(this.representativeVotingResult) {
     for (var result in representativeVotingResult) {
       switch (result.vote) {
         case VoteType.forVote:
@@ -49,22 +55,28 @@ class VotingRatioController extends GetxController {
   int get totalAbsent => absentVotes.length;
   int get totalVotes => totalYes + totalNo + totalAbsent;
 
-  BarChartRodData _barData(List<BarDataSection> sections) {
+  List<BarChartRodData> _barData(List<BarDataSection> sections) {
     var sum = 0.0;
-    final rodStackItems =
-        sections.map((s) {
-          final item = BarChartRodStackItem(sum, sum + s.amount, s.color);
-          sum += s.amount;
-          return item;
-        }).toList();
 
-    return BarChartRodData(
-      toY: sum,
-      color: sections.firstOrNull?.color ?? const Color(0xFF000000),
-      width: 40,
-      borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
-      rodStackItems: rodStackItems,
-    );
+    var i = 0;
+    return sections.map((s) {
+      i++;
+      final data = BarChartRodData(
+        fromY: sum,
+        toY: sum + s.amount,
+        color: s.color,
+        width: 40,
+        borderRadius:
+            (i == sections.length)
+                ? const BorderRadius.vertical(top: Radius.circular(4))
+                : BorderRadius.only(),
+        // rodStackItems: [BarChartRodStackItem(sum, sum + s.amount, s.color)],
+      );
+      sum += s.amount;
+      return data;
+    }).toList()
+    // .reversed.toList()
+    ;
   }
 
   List<BarDataSection> _groupByParty(List<RepresentativeVotingResult> results) {
@@ -95,12 +107,24 @@ class VotingRatioController extends GetxController {
   void _setRods(List<List<BarDataSection>> newRods) {
     var i = 0;
     rodData.assignAll(newRods);
+
     rods.assignAll(
-      newRods.map((r) => BarChartGroupData(x: i++, barRods: [_barData(r)])),
+      newRods.map(
+        (r) => BarChartGroupData(
+          x: i++,
+          groupVertically: true,
+          barRods: _barData(r),
+        ),
+      ),
     );
   }
 
   void sortByVotes() {
+    titles.assignAll([
+      'For ($totalYes)',
+      'Imot ($totalNo)',
+      'Borte ($totalAbsent)',
+    ]);
     _setRods([
       _groupByParty(forVotes),
       _groupByParty(againstVotes),
@@ -108,14 +132,27 @@ class VotingRatioController extends GetxController {
     ]);
   }
 
+  // void sortByParty() {
+  //   titles.assignAll([
+  //     'For ($totalYes)',
+  //     'Imot ($totalNo)',
+  //     'Borte ($totalAbsent)',
+  //   ]);
+  //   _setRods([
+  //     _groupByParty(forVotes),
+  //     _groupByParty(againstVotes),
+  //     _groupByParty(absentVotes),
+  //   ]);
+  // }
+
   BarTooltipItem? getTooltipItem(
     BarChartGroupData group,
     int groupIndex,
     BarChartRodData rod,
     int rodIndex,
   ) {
-    print ("$groupIndex $rodIndex");
-    return BarTooltipItem(rodData[groupIndex][rodIndex].label, TextStyle());
+    final section = rodData[groupIndex][rodIndex];
+    return BarTooltipItem("${section.label} (${section.amount})", TextStyle());
   }
 }
 
@@ -129,15 +166,32 @@ class VotingRatio extends GetView<VotingRatioController> {
 
     controller.sortByVotes();
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 60.0),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: BarChart(
+    return SizedBox(
+      width: controller.totalWidth,
+      height: 150,
+      child: Obx(
+        () => BarChart(
           BarChartData(
-            maxY: 169,
+            alignment: BarChartAlignment.start,
+            groupsSpace: controller.spacing.value,
             gridData: const FlGridData(show: false),
-            titlesData: const FlTitlesData(show: false),
+            borderData: FlBorderData(show: false),
+            titlesData: FlTitlesData(
+              leftTitles: const AxisTitles(),
+              rightTitles: const AxisTitles(),
+              topTitles: const AxisTitles(),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget:
+                      (i, meta) => SideTitleWidget(
+                        space: 0,
+                        meta: meta,
+                        child: Obx(() => Text(controller.titles[i.toInt()])),
+                      ),
+                ),
+              ),
+            ),
             barGroups: controller.rods,
             barTouchData: BarTouchData(
               touchTooltipData: BarTouchTooltipData(
