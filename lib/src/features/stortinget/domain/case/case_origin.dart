@@ -1,5 +1,5 @@
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:innsikt/src/features/stortinget/domain/representative.dart';
+import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
 
 part 'case_origin.mapper.dart';
 

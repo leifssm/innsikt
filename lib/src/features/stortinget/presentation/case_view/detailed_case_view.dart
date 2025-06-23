@@ -11,9 +11,9 @@ import 'package:innsikt/src/features/stortinget/presentation/case_view/case_prog
 import 'package:innsikt/src/features/stortinget/presentation/case_view/reference_list.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/related_cases.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/representative_list.dart';
+import 'package:innsikt/src/features/stortinget/presentation/case_view/seating_chart.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/topic_list.dart';
-import 'package:innsikt/src/features/stortinget/presentation/seating_chart.dart';
-import 'package:innsikt/src/features/stortinget/presentation/voting_ratio.dart';
+import 'package:innsikt/src/features/stortinget/presentation/case_view/voting_ratio.dart';
 import 'package:innsikt/src/utils/extensions/getx.dart';
 import 'package:innsikt/src/features/fluid/domain/fluid.dart';
 import 'package:logger/logger.dart';

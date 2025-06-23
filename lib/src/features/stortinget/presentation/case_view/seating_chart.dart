@@ -3,13 +3,15 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:innsikt/src/features/stortinget/domain/party.dart'
     show partyColorFromId;
-import 'package:innsikt/src/features/stortinget/domain/representative.dart';
+import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/representative_voting_result.dart';
-import 'package:innsikt/src/features/stortinget/presentation/seating_chart_spots.dart';
+import 'package:innsikt/src/features/stortinget/presentation/case_view/seating_chart_spots.dart';
+import 'package:innsikt/src/views/routes.dart';
 
 class SeatingChartController extends GetxController {
-  final width = 400.0;
+  final width = 400.0.obs;
   double get height => width / 2;
+  double get nodeSize => width.value / 55;
 
   final seats = <ScatterSpot>[].obs;
   late final List<Representative>? representatives;
@@ -20,21 +22,22 @@ class SeatingChartController extends GetxController {
     List<RepresentativeVotingResult>? representativeVotingResult,
   }) {
     this.representatives =
-        representatives == null ? [] : List.from(representatives)
-          ..sort((a, b) => a.party.compareTo(b.party));
+        representatives?.toList()?..sort((a, b) => a.party.compareTo(b.party));
+
     this.representativeVotingResult =
-        representativeVotingResult == null
-              ? []
-              : List.from(representativeVotingResult)
-          ..sort(
-            (a, b) => a.representative.party.compareTo(b.representative.party),
-          );
+        representativeVotingResult?.toList()?..sort(
+          (a, b) => a.representative.party.compareTo(b.representative.party),
+        );
   }
 
   @override
   void onReady() {
     super.onReady();
 
+    createSpots();
+  }
+
+  void createSpots() {
     var i = 0;
     seats.assignAll(
       generatedSeats.map((seat) {
@@ -47,7 +50,7 @@ class SeatingChartController extends GetxController {
           ),
           VoteType.against => FlDotCrossPainter(
             size: nodeSize * 1.3,
-            width: nodeSize / 2.5,
+            width: nodeSize * 0.5,
             color: getSeatColor(i),
           ),
           VoteType.absent => FlDotCirclePainter(
@@ -65,8 +68,6 @@ class SeatingChartController extends GetxController {
       }),
     );
   }
-
-  double get nodeSize => width / 65;
 
   Representative? getRepresentative(int index) {
     if (representativeVotingResult != null) {
@@ -112,26 +113,48 @@ class SeatingChart extends GetView<SeatingChartController> {
       ),
     );
 
-    return Padding(
-      padding: EdgeInsets.all(controller.nodeSize),
-      child: AspectRatio(
-        aspectRatio: 2,
-        child: Obx(
-          () => ScatterChart(
-            ScatterChartData(
-              scatterSpots: controller.seats,
-              scatterTouchData: ScatterTouchData(
-                touchTooltipData: ScatterTouchTooltipData(
-                  getTooltipItems: controller.getTooltipItems,
+    return AspectRatio(
+      aspectRatio: 2,
+      child: LayoutBuilder(
+        builder: (_, constraints) {
+          if (constraints.maxWidth.isFinite) {
+            controller.width.value = constraints.maxWidth;
+          }
+
+          return Obx(
+            () => ScatterChart(
+              ScatterChartData(
+                scatterSpots: controller.seats,
+                scatterTouchData: ScatterTouchData(
+                  touchTooltipData: ScatterTouchTooltipData(
+                    getTooltipItems: controller.getTooltipItems,
+                  ),
+                  mouseCursorResolver:
+                      (e, f) =>
+                          f?.touchedSpot != null
+                              ? SystemMouseCursors.click
+                              : SystemMouseCursors.basic,
+                  touchCallback: (event, response) {
+                    if (event is! FlTapUpEvent) return;
+
+                    final index = response?.touchedSpot?.spot.renderPriority;
+                    if (index == null) return;
+                    final rep = controller.getRepresentative(index);
+                    if (rep == null) return;
+                    Routes.goToRepresentativeRoute(rep);
+                  }
                 ),
-                // enabled: controller.representatives != null
+                borderData: FlBorderData(show: true),
+                gridData: FlGridData(show: false),
+                titlesData: FlTitlesData(show: false),
+                minX: -4,
+                maxX: 4,
+                minY: -0.2,
+                maxY: 4,
               ),
-              borderData: FlBorderData(show: false),
-              gridData: FlGridData(show: false),
-              titlesData: FlTitlesData(show: false),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

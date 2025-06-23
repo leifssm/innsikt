@@ -1,5 +1,5 @@
 import 'package:innsikt/src/features/stortinget/domain/mappable_hooks.dart';
-import 'package:innsikt/src/features/stortinget/domain/representative.dart';
+import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:innsikt/src/features/stortinget/domain/time_range.dart';
 

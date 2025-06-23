@@ -12,10 +12,7 @@ class RelatedCaseItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () {
-        Get.toNamed(
-          Routes.getDetailedRoute(),
-          parameters: {'caseId': relatedCase.caseId.toString()},
-        );
+        Routes.goToDetailedCase(relatedCase.caseId);
       },
       contentPadding: EdgeInsets.zero,
       leading: const Icon(Icons.insert_drive_file_outlined),

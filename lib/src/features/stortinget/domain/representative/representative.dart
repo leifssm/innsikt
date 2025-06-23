@@ -62,5 +62,15 @@ class Representative with RepresentativeMappable {
 
   get fullName => '$firstName $lastName';
 
+  get isDeceased => deathDate != null;
+
+  get age {
+    if (isDeceased) {
+      return birthDate.difference(deathDate!).inDays ~/ 365;
+    } else {
+      return DateTime.now().difference(birthDate).inDays ~/ 365;
+    }
+  }
+
   static final fromJson = RepresentativeMapper.fromJson;
 }

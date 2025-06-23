@@ -1,8 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:innsikt/src/features/stortinget/domain/county.dart';
 import 'package:innsikt/src/features/stortinget/domain/mappable_hooks.dart';
-import 'package:innsikt/src/features/stortinget/domain/party.dart';
-import 'package:innsikt/src/features/stortinget/domain/representative.dart';
+import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
 
 part 'vara_representative.mapper.dart';
 

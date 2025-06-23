@@ -85,5 +85,10 @@ class Party with PartyMappable implements Comparable<Party> {
     return thisIndex.compareTo(otherIndex);
   }
 
+  String getPartyImagePath() {
+    final partyId = id.toLowerCase();
+    return 'assets/parties/$partyId.png';
+  }
+
   static final fromJson = PartyMapper.fromJson;
 }

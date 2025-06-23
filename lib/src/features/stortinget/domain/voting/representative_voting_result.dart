@@ -1,6 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:innsikt/src/features/stortinget/domain/representative.dart';
-import 'package:innsikt/src/features/stortinget/domain/vara_representative.dart';
+import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
+import 'package:innsikt/src/features/stortinget/domain/representative/vara_representative.dart';
 
 part 'representative_voting_result.mapper.dart';
 

@@ -7,7 +7,7 @@ import 'package:innsikt/src/features/stortinget/domain/committee.dart';
 import 'package:innsikt/src/features/stortinget/domain/mappable_hooks.dart';
 import 'package:innsikt/src/features/stortinget/domain/publication_reference.dart';
 import 'package:innsikt/src/features/stortinget/domain/related_case.dart';
-import 'package:innsikt/src/features/stortinget/domain/representative.dart';
+import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
 
 part 'detailed_case.mapper.dart';
 

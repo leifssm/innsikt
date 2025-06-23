@@ -47,13 +47,13 @@ class InfiniteCaseView extends GetView<InfiniteCaseViewController> {
                   'Case ID: ${cases.cases[index].id}\n'
                   'Status: ${cases.cases[index].status}',
                 ),
-                tileColor: cases.cases[index].title.contains(searchWord) ? Colors.blue[300] : null,
+                tileColor:
+                    cases.cases[index].title.contains(searchWord)
+                        ? Colors.blue[300]
+                        : null,
 
                 onTap: () {
-                  Get.toNamed(
-                    Routes.getDetailedRoute(),
-                    parameters: {'caseId': cases.cases[index].id.toString()},
-                  );
+                  Routes.goToDetailedCase(cases.cases[index].id);
                 },
               );
             },
