@@ -41,8 +41,6 @@ class DetailedCaseViewController extends GetxController {
     detailedCase.updateAsync(() => stortinget.getDetailedCase(caseId));
     await voting.updateAsync(() => stortinget.getVotingsForCase(caseId));
     if (!voting.isSuccess) return;
-    print('fetching');
-    print(voting.data!.caseVotings);
     final votingId = voting.data!.caseVotings.first.votingId;
     result.updateAsync(() => stortinget.getVotingResults(votingId));
   }

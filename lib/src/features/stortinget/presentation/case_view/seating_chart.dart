@@ -93,6 +93,27 @@ class SeatingChartController extends GetxController {
 
     return ScatterTooltipItem('${rep.fullName} (${rep.party.id})');
   }
+
+  MouseCursor mouseCursorResolver(
+    FlTouchEvent _,
+    ScatterTouchResponse? response,
+  ) {
+    if (response?.touchedSpot == null) return SystemMouseCursors.basic;
+    return SystemMouseCursors.click;
+  }
+
+  void seatSelectionCallback(
+    FlTouchEvent event,
+    ScatterTouchResponse? response,
+  ) {
+    if (event is! FlTapUpEvent) return;
+
+    final index = response?.touchedSpot?.spot.renderPriority;
+    if (index == null) return;
+    final rep = getRepresentative(index);
+    if (rep == null) return;
+    Routes.goToRepresentativeRoute(rep);
+  }
 }
 
 class SeatingChart extends GetView<SeatingChartController> {
@@ -121,30 +142,18 @@ class SeatingChart extends GetView<SeatingChartController> {
             controller.width.value = constraints.maxWidth;
           }
 
-          return Obx(
-            () => ScatterChart(
+          return Obx(() {
+            return ScatterChart(
               ScatterChartData(
-                scatterSpots: controller.seats,
+                scatterSpots: controller.seats.toList(),
                 scatterTouchData: ScatterTouchData(
                   touchTooltipData: ScatterTouchTooltipData(
                     getTooltipItems: controller.getTooltipItems,
                   ),
-                  mouseCursorResolver:
-                      (e, f) =>
-                          f?.touchedSpot != null
-                              ? SystemMouseCursors.click
-                              : SystemMouseCursors.basic,
-                  touchCallback: (event, response) {
-                    if (event is! FlTapUpEvent) return;
-
-                    final index = response?.touchedSpot?.spot.renderPriority;
-                    if (index == null) return;
-                    final rep = controller.getRepresentative(index);
-                    if (rep == null) return;
-                    Routes.goToRepresentativeRoute(rep);
-                  }
+                  mouseCursorResolver: controller.mouseCursorResolver,
+                  touchCallback: controller.seatSelectionCallback,
                 ),
-                borderData: FlBorderData(show: true),
+                borderData: FlBorderData(show: false),
                 gridData: FlGridData(show: false),
                 titlesData: FlTitlesData(show: false),
                 minX: -4,
@@ -152,8 +161,8 @@ class SeatingChart extends GetView<SeatingChartController> {
                 minY: -0.2,
                 maxY: 4,
               ),
-            ),
-          );
+            );
+          });
         },
       ),
     );
