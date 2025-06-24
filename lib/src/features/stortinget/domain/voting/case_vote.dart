@@ -7,22 +7,21 @@ part 'case_vote.mapper.dart';
 
 @MappableEnum()
 enum VotingMethod {
-  @MappableValue(1)
   unspecified("ikke_spesifisert"),
-  @MappableValue(2)
+  @MappableValue(1)
   electronic("elektronisk"),
-  @MappableValue(3)
+  @MappableValue(2)
   rolecall("navneopprop"),
-  @MappableValue(4)
+  @MappableValue(3)
   standingSitting("staaende_sittende"),
-  @MappableValue(5)
+  @MappableValue(4)
   written("skriftlig");
 
   final String name;
   const VotingMethod(this.name);
 
   @override
-  String toString() => name;
+  String toString() => "##$name##";
 }
 
 /// Dette er såkalt faste koder som kan benyttes i stedet for vanlig votering med bruk av voteringsknapper:
@@ -45,7 +44,7 @@ enum VoteResultType {
   const VoteResultType(this.name);
 
   @override
-  String toString() => name;
+  String toString() => "##$name##";
 }
 
 @MappableClass()
@@ -100,7 +99,7 @@ class CaseVote with CaseVoteMappable {
 
   /// Element som angir om tema for voteringen er vedtatt
   @MappableField(key: 'vedtatt')
-  final bool processed;
+  final bool passed;
 
   /// Element som definerer identifikator for voteringen
   @MappableField(key: 'votering_id')
@@ -123,7 +122,10 @@ class CaseVote with CaseVoteMappable {
   final DateTime voteTime;
 
   /// Element som definerer metode for voteringen
-  @MappableField(key: 'votering_metode', hook: DefaultValue(VotingMethod.unspecified))
+  @MappableField(
+    key: 'votering_metode',
+    hook: DefaultValue(VotingMethod.unspecified),
+  )
   final VotingMethod votingMethod;
 
   /// Element som definerer resultat-tekst for voteringen
@@ -135,7 +137,7 @@ class CaseVote with CaseVoteMappable {
     required this.president,
     required this.freeVoting,
     required this.votingTopic,
-    required this.processed,
+    required this.passed,
     required this.votingMethod,
     required this.personalVoting,
     required this.allFor,

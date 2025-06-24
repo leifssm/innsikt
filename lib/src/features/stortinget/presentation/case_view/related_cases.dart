@@ -28,6 +28,12 @@ class RelatedCaseList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WidgetMapper.col(cases, (c) => RelatedCaseItem(relatedCase: c));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Relaterte saker:", style: Get.textTheme.titleMedium),
+        WidgetMapper.col(cases, (c) => RelatedCaseItem(relatedCase: c)),
+      ],
+    );
   }
 }

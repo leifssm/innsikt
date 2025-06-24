@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:innsikt/src/components/attribute_list.dart';
-import 'package:innsikt/src/components/info_card.dart';
 import 'package:innsikt/src/components/standard_scaffold.dart';
-import 'package:innsikt/src/features/fluid/domain/fluid.dart';
-import 'package:innsikt/src/features/fluid/presentation/loading.dart';
 import 'package:innsikt/src/features/stortinget/data/stortinget_repository.dart';
 import 'package:innsikt/src/features/stortinget/domain/picture_size.dart';
 import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
 import 'package:innsikt/src/utils/extensions/date.dart';
-import 'package:innsikt/src/utils/extensions/getx.dart';
 import 'package:innsikt/src/utils/extensions/units.dart';
 import 'package:logger/logger.dart';
 
@@ -111,7 +106,6 @@ class RepresentativeView extends GetView<RepresentativeViewController> {
               ),
             ],
           ),
-          Text(controller.representative.toString()),
         ],
       ),
     );

@@ -5,7 +5,7 @@ import 'package:innsikt/src/features/stortinget/domain/party.dart'
     show partyColorFromId;
 import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/representative_voting_result.dart';
-import 'package:innsikt/src/features/stortinget/presentation/case_view/seating_chart_spots.dart';
+import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/seating_chart_spots.dart';
 import 'package:innsikt/src/views/routes.dart';
 
 class SeatingChartController extends GetxController {
@@ -119,10 +119,12 @@ class SeatingChartController extends GetxController {
 class SeatingChart extends GetView<SeatingChartController> {
   final List<Representative>? representatives;
   final List<RepresentativeVotingResult>? representativeVotingResult;
+  final bool disableInteraction;
   const SeatingChart({
     super.key,
     this.representatives,
     this.representativeVotingResult,
+    this.disableInteraction = false,
   });
 
   @override
@@ -146,13 +148,19 @@ class SeatingChart extends GetView<SeatingChartController> {
             return ScatterChart(
               ScatterChartData(
                 scatterSpots: controller.seats.toList(),
-                scatterTouchData: ScatterTouchData(
-                  touchTooltipData: ScatterTouchTooltipData(
-                    getTooltipItems: controller.getTooltipItems,
-                  ),
-                  mouseCursorResolver: controller.mouseCursorResolver,
-                  touchCallback: controller.seatSelectionCallback,
-                ),
+                scatterTouchData:
+                    disableInteraction
+                        ? ScatterTouchData(
+                          enabled: false,
+                          mouseCursorResolver: (_, _) => MouseCursor.defer,
+                        )
+                        : ScatterTouchData(
+                          touchTooltipData: ScatterTouchTooltipData(
+                            getTooltipItems: controller.getTooltipItems,
+                          ),
+                          mouseCursorResolver: controller.mouseCursorResolver,
+                          touchCallback: controller.seatSelectionCallback,
+                        ),
                 borderData: FlBorderData(show: false),
                 gridData: FlGridData(show: false),
                 titlesData: FlTitlesData(show: false),

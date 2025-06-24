@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:innsikt/src/features/fluid/presentation/loading.dart';
-import 'package:innsikt/src/features/stortinget/domain/case/case.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/case_list.dart';
 import 'package:innsikt/src/utils/extensions/getx.dart';
 import 'package:innsikt/src/features/fluid/domain/fluid.dart';
@@ -13,6 +12,7 @@ class InfiniteCaseViewController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    // Routes.goToDetailedCase(103838);
     fetchCases();
   }
 
@@ -45,10 +45,10 @@ class InfiniteCaseView extends GetView<InfiniteCaseViewController> {
                 ),
                 subtitle: Text(
                   'Case ID: ${cases.cases[index].id}\n'
-                  'Status: ${cases.cases[index].status}',
+                  'Status: ${cases.cases[index].documentGroup} - ${cases.cases[index].recommendationCode}',
                 ),
                 tileColor:
-                    cases.cases[index].title.contains(searchWord)
+                    cases.cases[index].id == 103838
                         ? Colors.blue[300]
                         : null,
 

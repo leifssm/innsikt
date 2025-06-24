@@ -20,6 +20,7 @@ class Routes {
   static void goToDetailedCase(int caseId) {
     Get.toNamed(
       getDetailedCaseRoute(),
+      preventDuplicates: false,
       parameters: {'caseId': caseId.toString()},
     );
   }

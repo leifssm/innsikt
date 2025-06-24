@@ -108,7 +108,7 @@ abstract class StortingetRepository {
   Future<Sessions> getError();
 
   @GET('/voteringer')
-  Future<Voting> getVotingsForCase(@Query('sakid') int caseId);
+  Future<Votings> getVotingsForCase(@Query('sakid') int caseId);
 
   @GET('/voteringsresultat')
   Future<VotingResult> getVotingResults(@Query('voteringid') int voteId);
