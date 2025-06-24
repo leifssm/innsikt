@@ -11,9 +11,9 @@ enum CaseType {
   @MappableValue(1)
   budget("budsjett"),
   @MappableValue(2)
-  lawCase("lovsak"),
+  ordinaryCase("alminneligsak"),
   @MappableValue(3)
-  ordinaryCase("alminneligsak");
+  lawCase("lovsak");
 
   final String name;
   const CaseType(this.name);
@@ -22,22 +22,23 @@ enum CaseType {
   String toString() => name;
 }
 
+// TODO: 4 and 7 are not certain, could switch places
 @MappableEnum()
 enum CaseStatus {
   @MappableValue(1)
-  notified("varlset"),
-  @MappableValue(2)
-  recieved("mottatt"),
-  @MappableValue(3)
-  inProgress("til_behandling"),
-  @MappableValue(4)
   processed("behandlet"),
+  @MappableValue(2)
+  inProgress("til_behandling"), // Dokumentet er til behandling i komiteen
+  @MappableValue(3)
+  recieved("mottatt"),
+  @MappableValue(4)
+  debated("debattert"), /// Venter på votering
   @MappableValue(5)
   withdrawn("trukket"),
   @MappableValue(6)
   lapsed("bortfalt"),
   @MappableValue(7)
-  unspecified("API spesifiserer ikke");
+  notified("varlset");
 
   final String name;
   const CaseStatus(this.name);
@@ -49,7 +50,7 @@ enum CaseStatus {
 @MappableEnum()
 enum CaseDocumentGroup {
   @MappableValue(0)
-  idfk("idfk"),
+  idfk("initiativdebatt"),
   @MappableValue(1)
   proposition("proposisjon"),
   @MappableValue(2)
@@ -59,13 +60,13 @@ enum CaseDocumentGroup {
   @MappableValue(4)
   privateMemberBill("representantforslag"),
   @MappableValue(5)
-  documentSeries("dokumentserien"),
+  idfk1("grunnlovsforslag"),
   @MappableValue(6)
-  recommendationCases("innstillingssaker"),
+  documentSeries("dokumentserien"),
   @MappableValue(7)
-  reportSummary("innberetning"),
+  recommendationCases("innstillingssaker"), // TODO: Fix this, this is true, but almost none of the cases show ut as recommendationCases
   @MappableValue(8)
-  idfk1("idfk1");
+  reportSummary("innberetning");
 
   final String name;
   const CaseDocumentGroup(this.name);
@@ -77,7 +78,7 @@ enum CaseDocumentGroup {
 @MappableEnum()
 enum RecommendationCode {
   @MappableValue(0)
-  idfk("idfk"),
+  notARecommendation("ikke_instilling"), // TODO: still unsure if this is correct
 
   /// Innstilling til Stortinget. Komiteens innstillinger om alminnelige saker og budsjettsaker.
   @MappableValue(1)

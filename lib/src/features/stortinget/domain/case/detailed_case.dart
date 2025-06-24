@@ -35,7 +35,7 @@ class DetailedCase with DetailedCaseMappable {
 
   /// Element som definerer henvisning for saken
   @MappableField(key: 'henvisning')
-  final String referral;
+  final String? referral;
 
   /// Element som definerer dokumentgruppe for saken
   @MappableField(key: 'dokumentgruppe')

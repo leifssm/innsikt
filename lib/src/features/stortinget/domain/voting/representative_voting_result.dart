@@ -7,11 +7,11 @@ part 'representative_voting_result.mapper.dart';
 @MappableEnum()
 enum VoteType {
   @MappableValue(1)
-  forVote("for"),
+  absent("ikke_tilstede"),
   @MappableValue(2)
-  against("mot"),
+  forVote("for"),
   @MappableValue(3)
-  absent("ikke_tilstede");
+  against("mot");
 
   final String name;
   const VoteType(this.name);
