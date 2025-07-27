@@ -25,11 +25,13 @@ class Loading<T> extends StatelessWidget {
   final LoadingComponentBuilder loadingBuilder;
   final LoadingComponentBuilder waitingBuilder;
   final ErrorComponentBuilder errorBuilder;
+  final bool showOnlySuccess;
 
   const Loading({
     super.key,
     required this.value,
     required this.builder,
+    this.showOnlySuccess = false,
     this.errorBuilder = _defaultErrorBuilder,
     this.loadingBuilder = _defaultLoadingBuilder,
     this.waitingBuilder = _defaultLoadingBuilder,
@@ -44,6 +46,9 @@ class Loading<T> extends StatelessWidget {
           error: value.error,
           stackTrace: value.stackTrace,
         );
+      }
+      if (showOnlySuccess && !value.isSuccess) {
+        return const SizedBox.shrink();
       }
       return switch (value.value.status) {
         FluidStatus.success => builder(value.value.data!),

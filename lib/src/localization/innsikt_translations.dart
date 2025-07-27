@@ -5,6 +5,7 @@ class InnsiktTranslations extends Translations {
   Map<String, Map<String, String>> get keys => {
     'no': {
       'title': 'Hello World %s',
+      'voting-switcher.error': 'Kunne ikke hente stemmeresultater',
     },
   };
 }

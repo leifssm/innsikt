@@ -19,7 +19,7 @@ class VotingListController extends GetxController {
 
   VotingListController(this.caseId);
 
-  void fetch() async {
+  void fetchRelatedVotings() async {
     await summarizedVotings.updateAsync(
       () => stortinget.getSummarizedVotingsForCase(caseId),
     );
@@ -38,6 +38,28 @@ class VotingList extends GetView<VotingListController> {
   final int caseId;
   const VotingList({super.key, required this.caseId});
 
+  Widget votingToSummary(SummarizedVoting voting) {
+    return Text.rich(
+      TextSpan(
+        children:
+            voting.items.indexed
+                .map(
+                  (item) => TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            "${item.$1 == 0 ? "" : "\n\n"}${item.$2.suggestion.title.trim()}:\n",
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      TextSpan(text: item.$2.voteReason),
+                    ],
+                  ),
+                )
+                .toList(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Get.put(VotingListController(caseId));
@@ -45,7 +67,7 @@ class VotingList extends GetView<VotingListController> {
     return Column(
       children: [
         TextButton(
-          onPressed: controller.fetch,
+          onPressed: controller.fetchRelatedVotings,
           child: Text("Hent avstemninger"),
         ),
         Loading(
@@ -64,42 +86,8 @@ class VotingList extends GetView<VotingListController> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text.rich(
-                                        TextSpan(
-                                          children:
-                                              voting.items.indexed
-                                                  .map(
-                                                    (item) => TextSpan(
-                                                      children: [
-                                                        TextSpan(
-                                                          text:
-                                                              "${item.$1 == 0 ? "" : "\n\n"}${item.$2.suggestion.title.trim()}:\n",
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                          ),
-                                                        ),
-                                                        TextSpan(
-                                                          text:
-                                                              item
-                                                                  .$2
-                                                                  .voteReason,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                  .toList(),
-                                        ),
-                                      ),
-                                      // SimpleVotingRatio(
-                                      //   forVotes: voting.caseVote.allFor,
-                                      //   againstVotes:
-                                      //       voting.caseVote.allAgainst,
-                                      //   absentVotes: voting.caseVote.allAbsent,
-                                      // ),
-                                      // VotingRatio(key: ValueKey(voting.caseVote.votingId),
-                                      //   representativeVotingResult: voting.caseVote.,
-                                      // ),
+                                      votingToSummary(voting),
+                                      Divider(),
                                       VotingRatioTypeSwitcher(
                                         key: ValueKey(voting.caseVote.votingId),
                                         voting: voting,
@@ -110,30 +98,6 @@ class VotingList extends GetView<VotingListController> {
                               ),
                             )
                             .toList(),
-
-                    // Card(
-                    //   child: Padding(
-                    //     padding: EdgeInsets.all(1.unit),
-                    //     child: Column(
-                    //       children: [
-                    //         Text('${voting.title}: '),
-                    //         ...voting.items.map(
-                    //           (item) => Text.rich(
-                    //             TextSpan(
-                    //               children: [
-                    //                 TextSpan(
-                    //                   text: "${item.suggestion.title}:\n",
-                    //                   style: TextStyle(fontWeight: FontWeight.w500),
-                    //                 ),
-                    //                 TextSpan(text: item.voteReason),
-                    //               ],
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
                   ),
                 ],
               ),
