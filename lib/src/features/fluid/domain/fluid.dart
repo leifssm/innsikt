@@ -62,9 +62,9 @@ extension GetAsyncExtension<T> on Rx<Fluid<T>> {
   StackTrace? get stackTrace => value.stackTrace;
 
   Future<void> updateAsync(
-    Future<T> Function() future, [
+    Future<T> Function() future, {
     bool keepOld = false,
-  ]) async {
+  }) async {
     if (!keepOld || value.isWaiting) value = Fluid.loading();
     try {
       value = Fluid.success(await future());

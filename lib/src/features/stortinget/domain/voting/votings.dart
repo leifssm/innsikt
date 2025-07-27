@@ -1,7 +1,7 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/case_vote.dart';
 
-part 'voting.mapper.dart';
+part 'votings.mapper.dart';
 
 @MappableClass()
 class Votings with VotingsMappable {

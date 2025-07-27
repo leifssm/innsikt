@@ -6,31 +6,33 @@ import 'package:innsikt/src/features/stortinget/data/stortinget_repository.dart'
 import 'package:innsikt/src/features/stortinget/domain/picture_size.dart';
 import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
 import 'package:innsikt/src/utils/extensions/date.dart';
+import 'package:innsikt/src/utils/extensions/getx.dart';
 import 'package:innsikt/src/utils/extensions/units.dart';
 import 'package:logger/logger.dart';
 
 class RepresentativeViewController extends GetxController {
   final logger = Logger();
 
-  // Can be passed to fill with already cached data
-  final _representative = Get.arguments?['representative'];
-  Representative get representative {
-    if (_representative is! Representative) {
-      throw StateError(
-        "representative argument must be a Representative object",
-      );
-    }
-    return _representative;
-  }
+  late final Representative representative;
 
   @override
   void onReady() {
-    super.onReady();
-    if (_representative is! Representative) {
+    final representative = Get.arguments?['representative'];
+    if (representative is! Representative) {
       Get.back();
       logger.e("No representative provided");
       return;
     }
+    this.representative = representative;
+    super.onReady();
+  }
+
+  String get profileUrl {
+    return stortinget.getProfileUrl(
+      personId: representative.id,
+      size: PictureSize.medium,
+      defaultPicture: true,
+    );
   }
 }
 
@@ -40,12 +42,6 @@ class RepresentativeView extends GetView<RepresentativeViewController> {
   @override
   Widget build(BuildContext context) {
     Get.put(RepresentativeViewController());
-
-    final profile = getProfileUrl(
-      personId: controller.representative.id,
-      size: PictureSize.small,
-      defaultPicture: true,
-    );
 
     return StandardScaffold(
       title: controller.representative.fullName,
@@ -57,7 +53,7 @@ class RepresentativeView extends GetView<RepresentativeViewController> {
               Stack(
                 alignment: Alignment.bottomRight,
                 children: [
-                  Image(image: NetworkImage(profile)),
+                  Image(image: NetworkImage(controller.profileUrl)),
                   Image.asset(
                     controller.representative.party.getPartyImagePath(),
                     width: 50,

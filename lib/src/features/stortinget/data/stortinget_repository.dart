@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
+import 'package:innsikt/src/features/stortinget/application/vote_suggestion_cleaner.dart';
 import 'package:innsikt/src/features/stortinget/data/stortinget_call_adapter.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/case_list.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/detailed_case.dart';
@@ -6,8 +8,11 @@ import 'package:innsikt/src/features/stortinget/domain/party_list.dart';
 import 'package:innsikt/src/features/stortinget/domain/picture_size.dart';
 import 'package:innsikt/src/features/stortinget/domain/sessions.dart';
 import 'package:innsikt/src/features/stortinget/domain/storting_periods.dart';
-import 'package:innsikt/src/features/stortinget/domain/voting/voting.dart';
+import 'package:innsikt/src/features/stortinget/domain/voting/summarized_voting.dart';
+import 'package:innsikt/src/features/stortinget/domain/voting/voting_suggestions.dart';
+import 'package:innsikt/src/features/stortinget/domain/voting/votings.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/voting_result.dart';
+import 'package:innsikt/src/utils/gentle_querier.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
@@ -112,19 +117,65 @@ abstract class StortingetRepository {
 
   @GET('/voteringsresultat')
   Future<VotingResult> getVotingResults(@Query('voteringid') int voteId);
+
+  @GET('/voteringsforslag')
+  Future<VotingSuggestions> getVotingSuggestions(
+    @Query('voteringid') int voteId,
+  );
 }
 
-String getProfileUrl({
-  required String personId,
-  required PictureSize size,
-  bool? defaultPicture,
-}) {
-  final query = <String, dynamic>{
-    'personid': personId,
-    'storrelse': size.value,
-  };
-  if (defaultPicture != null) {
-    query['erstatningsbilde'] = defaultPicture.toString();
+// Seperate because of Retrofit code generation
+extension StortingetRepositoryDefaults on StortingetRepository {
+  String getProfileUrl({
+    required String personId,
+    required PictureSize size,
+    bool? defaultPicture,
+  }) {
+    final query = <String, dynamic>{
+      'personid': personId,
+      'storrelse': size.value,
+    };
+    if (defaultPicture != null) {
+      query['erstatningsbilde'] = defaultPicture.toString();
+    }
+    return 'https://data.stortinget.no/eksport/personbilde?${Uri(queryParameters: query).query}';
   }
-  return 'https://data.stortinget.no/eksport/personbilde?${Uri(queryParameters: query).query}';
+
+  Future<SummarizedVotings> getSummarizedVotingsForCase(int caseId) async {
+    final votings = await getVotingsForCase(caseId);
+    final votingGroups = await GentleQuerier.query(
+      getVotingSuggestions,
+      votings.caseVotings.map((v) => v.votingId).toList(),
+    );
+
+    return SummarizedVotings(
+      caseId: caseId,
+      items:
+          votingGroups.indexed
+              .map((group) {
+                final (i, suggestions) = group;
+                return SummarizedVoting(
+                  title: votings.caseVotings[i].votingTopic,
+                  caseVote: votings.caseVotings[i],
+                  items:
+                      suggestions.suggestions
+                          .map(
+                            (suggestion) => SummarizedVotingItem(
+                              voteReason:
+                                  suggestion.suggestionText != null
+                                      ? VoteSuggestionCleaner.clean(
+                                        suggestion.suggestionText!,
+                                      )
+                                      : "Kunne ikke hente forslagstekst",
+                              suggestion: suggestion,
+                            ),
+                          )
+                          .toList(),
+                );
+              })
+              .toList()
+              .reversed
+              .toList(),
+    );
+  }
 }

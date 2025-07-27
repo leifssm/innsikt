@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:innsikt/src/utils/extensions/units.dart';
-import 'package:innsikt/src/utils/widget_mapper.dart';
 
 class Attribute {
   final String name;

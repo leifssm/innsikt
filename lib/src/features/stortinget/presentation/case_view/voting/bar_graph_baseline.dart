@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/widgets.dart';
-import 'package:get/get.dart';
 
 class GraphBarSection {
   final String label;
@@ -10,23 +9,25 @@ class GraphBarSection {
   final Color color;
 
   const GraphBarSection({
+    required this.label,
     required this.amount,
     required this.color,
-    required this.label,
   });
 }
 
 typedef GraphBar = List<GraphBarSection>;
 
 class GraphData {
-  final List<GraphBar> bars;
   final List<String> titles;
+  final List<GraphBar> bars;
 
-  const GraphData({required this.bars, required this.titles});
+  const GraphData({required this.titles, required this.bars});
 
-  static plain({required GraphBar bars, required List<String> titles}) {
+  static GraphData plain({required List<String> titles, required GraphBar bars}) {
     return GraphData(bars: bars.map((bar) => [bar]).toList(), titles: titles);
   }
+
+  static GraphData empty() => GraphData(titles: [], bars: []);
 }
 
 class BarGraphBaseline extends StatelessWidget {
@@ -34,12 +35,17 @@ class BarGraphBaseline extends StatelessWidget {
   final int? maxAmount;
   final double width;
   final double spacing;
+  final bool vertical;
+  final double labelSize;
+
   const BarGraphBaseline({
     super.key,
     this.graphData,
     this.maxAmount,
     this.width = 20,
     this.spacing = 10,
+    this.vertical = false,
+    this.labelSize = 40,
   });
 
   Widget getTitlesWidget(double value, TitleMeta meta) {
@@ -48,10 +54,10 @@ class BarGraphBaseline extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return SideTitleWidget(
-      space: 0,
+      space: 2,
       meta: meta,
-      angle: -pi / 6,
-      child: Text(graphData!.titles[index]),
+      angle: vertical ? 0 : -pi / 6,
+      child: Text("${graphData!.titles[index]}  "),
     );
   }
 
@@ -105,6 +111,7 @@ class BarGraphBaseline extends StatelessWidget {
     }
     return BarChart(
       BarChartData(
+        rotationQuarterTurns: vertical ? 1 : 0,
         maxY: maxAmount?.toDouble(),
         groupsSpace: spacing,
         alignment: BarChartAlignment.start,
@@ -118,6 +125,7 @@ class BarGraphBaseline extends StatelessWidget {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: getTitlesWidget,
+              reservedSize: labelSize
             ),
           ),
         ),

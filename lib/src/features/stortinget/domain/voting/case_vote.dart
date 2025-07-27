@@ -1,7 +1,6 @@
 import 'package:innsikt/src/features/stortinget/domain/mappable_hooks.dart';
 import 'package:innsikt/src/features/stortinget/domain/representative/representative.dart';
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:innsikt/src/features/stortinget/domain/time_range.dart';
 
 part 'case_vote.mapper.dart';
 
@@ -28,17 +27,17 @@ enum VotingMethod {
 @MappableEnum()
 enum VoteResultType {
   @MappableValue(0)
-  manual("manuell"),
+  rejectedAgaintNVotes("forkastet_mot_N_stemmer0?"),
   @MappableValue(1)
-  unanimouslyAdopted("enstemmig_vedtatt"),
-  @MappableValue(2)
   adoptedAgaintNVotes("vedtatt_mot_N_stemmer"),
+  @MappableValue(2)
+  rejectedWithPresidentialDoublevote("forkastet_med_president_dobbeltstemme"),
   @MappableValue(3)
-  rejectedAgaintNVotes("forkastet_mot_N_stemmer"),
-  @MappableValue(4)
   adoptedWithPresidentialDoublevote("vedtatt_med_president_dobbeltstemme"),
+  @MappableValue(4)
+  manual("manuell"),
   @MappableValue(5)
-  rejectedWithPresidentialDoublevote("forkastet_med_president_dobbeltstemme");
+  unanimouslyAdopted("enstemmig_vedtatt5");
 
   final String name;
   const VoteResultType(this.name);
@@ -105,14 +104,6 @@ class CaseVote with CaseVoteMappable {
   @MappableField(key: 'votering_id')
   final int votingId;
 
-  /// Dette er såkalt faste koder som kan benyttes i stedet for vanlig votering med bruk av voteringsknapper
-  @MappableField(key: 'votering_resultat_type')
-  final VoteResultType voteType;
-
-  /// Unspecified
-  @MappableField(key: 'votering_resultat_type_tekst')
-  final String? voteTypeText;
-
   /// Element som definerer hva voteringen gjelder. Vanligvis hvilke voteringsforslag det voteres over, eventuelt hvilke deler av forslag(et) det voteres over. NB! Dette elementet må alltid sammenholdes med forslagsteksten for å vite hvilke deler av forslaget det voteres over.
   @MappableField(key: 'votering_tema')
   final String votingTopic;
@@ -128,9 +119,17 @@ class CaseVote with CaseVoteMappable {
   )
   final VotingMethod votingMethod;
 
+  /// Dette er såkalt faste koder som kan benyttes i stedet for vanlig votering med bruk av voteringsknapper
+  @MappableField(key: 'votering_resultat_type')
+  final VoteResultType voteResultType;
+
   /// Element som definerer resultat-tekst for voteringen
   @MappableField(key: 'votering_resultat_tekst')
   final String? voteResultText;
+
+  /// Unspecified
+  @MappableField(key: 'votering_resultat_type_tekst')
+  final String? voteResultTypeText;
 
   const CaseVote({
     required this.alterativeVotingId,
@@ -149,11 +148,34 @@ class CaseVote with CaseVoteMappable {
     required this.comment,
     required this.caseId,
     required this.votingId,
-    required this.voteType,
-    required this.voteTypeText,
+    required this.voteResultType,
+    required this.voteResultTypeText,
     required this.voteResultText,
     required this.voteTime,
   });
 
   static final fromJson = CaseVoteMapper.fromJson;
+
+  @override
+  String toString() {
+    return """CaseVote{
+  votingTopic: $votingTopic, 
+  passed: $passed, 
+  alterativeVotingId: $alterativeVotingId, 
+  freeVoting: $freeVoting, 
+  votingMethod: $votingMethod, 
+  personalVoting: $personalVoting, 
+  allFor: $allFor, 
+  allAgainst: $allAgainst, 
+  allAbsent: $allAbsent, 
+  progressStep: $progressStep, 
+  meetingChartNumber: $meetingChartNumber, 
+  agendaCaseId: $agendaCaseId, 
+  comment: $comment,
+  voteResultType: $voteResultType, 
+  voteResultTypeText: $voteResultTypeText, 
+  voteResultText: $voteResultText, 
+}"""
+    ;
+  }
 }

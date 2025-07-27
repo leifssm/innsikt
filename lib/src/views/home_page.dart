@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:innsikt/src/features/stortinget/data/stortinget_repository.dart';
-import 'package:innsikt/src/features/stortinget/domain/case/case.dart';
 import 'package:innsikt/src/features/stortinget/domain/case/case_list.dart';
-import 'package:innsikt/src/features/stortinget/domain/case/detailed_case.dart';
 import 'package:innsikt/src/features/stortinget/domain/party_list.dart';
+import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/voting_ratio.dart';
 import 'package:innsikt/src/features/stortinget/presentation/infinite_case_view.dart';
 import 'package:innsikt/src/utils/extensions/getx.dart';
 import 'package:innsikt/src/features/fluid/domain/fluid.dart';
