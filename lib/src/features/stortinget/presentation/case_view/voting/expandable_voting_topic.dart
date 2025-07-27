@@ -46,7 +46,9 @@ class ExpandableVotingTopic extends GetView<ExpandableVotingTopicController>
     Get.put(ExpandableVotingTopicController(voting), tag: tag);
 
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 600),
+      constraints: BoxConstraints(
+        maxWidth: 600,
+      ),
       child: Card(
         child: Padding(
           padding: EdgeInsets.all(1.unit),
