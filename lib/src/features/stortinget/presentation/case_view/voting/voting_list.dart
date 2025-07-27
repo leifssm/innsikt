@@ -4,13 +4,8 @@ import 'package:innsikt/src/features/fluid/domain/fluid.dart';
 import 'package:innsikt/src/features/fluid/presentation/loading.dart';
 import 'package:innsikt/src/features/stortinget/data/stortinget_repository.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/summarized_voting.dart';
-import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/bar_graph_baseline.dart';
-import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/simple_voting_ratio.dart';
-import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/voting_ratio.dart';
-import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/voting_ratio_type_switcher.dart';
+import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/expandable_voting_topic.dart';
 import 'package:innsikt/src/utils/extensions/getx.dart';
-import 'package:innsikt/src/utils/extensions/units.dart';
-import 'package:innsikt/src/utils/widget_mapper.dart';
 
 class VotingListController extends GetxController {
   final int caseId;
@@ -30,35 +25,13 @@ class VotingListController extends GetxController {
 
   void onVotingTopicClicked(int index, bool expanded) {
     isExpanded[index] = expanded;
-    isExpanded.refresh();
+    // isExpanded.refresh();
   }
 }
 
 class VotingList extends GetView<VotingListController> {
   final int caseId;
   const VotingList({super.key, required this.caseId});
-
-  Widget votingToSummary(SummarizedVoting voting) {
-    return Text.rich(
-      TextSpan(
-        children:
-            voting.items.indexed
-                .map(
-                  (item) => TextSpan(
-                    children: [
-                      TextSpan(
-                        text:
-                            "${item.$1 == 0 ? "" : "\n\n"}${item.$2.suggestion.title.trim()}:\n",
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      TextSpan(text: item.$2.voteReason),
-                    ],
-                  ),
-                )
-                .toList(),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,32 +47,14 @@ class VotingList extends GetView<VotingListController> {
           value: controller.summarizedVotings,
           builder:
               (votings) => Column(
-                children: [
-                  Column(
-                    children:
-                        votings.items
-                            .map(
-                              (voting) => Card(
-                                child: Padding(
-                                  padding: EdgeInsets.all(1.unit),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      votingToSummary(voting),
-                                      Divider(),
-                                      VotingRatioTypeSwitcher(
-                                        key: ValueKey(voting.caseVote.votingId),
-                                        voting: voting,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                  ),
-                ],
+                children:
+                    votings.items
+                        .map(
+                          (v) => ExpandableVotingTopic(
+                            voting: v,
+                          ),
+                        )
+                        .toList(),
               ),
         ),
       ],
