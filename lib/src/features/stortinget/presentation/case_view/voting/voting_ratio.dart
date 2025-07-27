@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:innsikt/src/features/stortinget/domain/party.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/representative_voting_result.dart';
+import 'package:innsikt/src/features/stortinget/domain/voting/voting_result.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/bar_graph_baseline.dart';
-import 'package:innsikt/src/utils/standalone_controller_mixin.dart';
 
 class VotingRatioController extends GetxController {
-  final List<RepresentativeVotingResult> representativeVotingResult;
+  final VotingResult votingResult;
 
-  VotingRatioController(this.representativeVotingResult);
+  VotingRatioController(this.votingResult);
 
   final forVotes = <RepresentativeVotingResult>[];
   final againstVotes = <RepresentativeVotingResult>[];
@@ -19,7 +19,7 @@ class VotingRatioController extends GetxController {
 
   @override
   void onInit() {
-    for (var result in representativeVotingResult) {
+    for (var result in votingResult.results) {
       final _ = switch (result.vote) {
         VoteType.forVote => forVotes,
         VoteType.against => againstVotes,
@@ -73,20 +73,22 @@ class VotingRatioController extends GetxController {
   }
 }
 
-class VotingRatio extends GetView<VotingRatioController>
-    with StandaloneControllerMixin {
-  final List<RepresentativeVotingResult> representativeVotingResult;
+class VotingRatio extends GetView<VotingRatioController> {
+  @override
+  String get tag => votingResult.votingId.toString();
+
+  final VotingResult votingResult;
   final bool vertical;
 
   const VotingRatio({
-    required super.key,
-    required this.representativeVotingResult,
+    super.key,
+    required this.votingResult,
     this.vertical = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    control(VotingRatioController(representativeVotingResult));
+    Get.put(VotingRatioController(votingResult), tag: tag);
 
     return Obx(
       () => BarGraphBaseline(

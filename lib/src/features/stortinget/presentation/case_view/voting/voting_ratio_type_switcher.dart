@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:innsikt/src/components/op_obx.dart';
 import 'package:innsikt/src/features/fluid/domain/fluid.dart';
 import 'package:innsikt/src/features/fluid/presentation/loading.dart';
-import 'package:innsikt/src/features/stortinget/domain/case/case_list.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/summarized_voting.dart';
 import 'package:innsikt/src/features/stortinget/domain/voting/voting_result.dart';
 import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/seating_chart.dart';
@@ -11,7 +10,6 @@ import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/si
 import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/voting_ratio.dart';
 import 'package:innsikt/src/utils/extensions/getx.dart';
 import 'package:innsikt/src/utils/extensions/units.dart';
-import 'package:innsikt/src/utils/standalone_controller_mixin.dart';
 
 class VotingRatioTypeSwitcherController extends GetxController {
   VotingRatioTypeSwitcherController(this.voting);
@@ -34,11 +32,13 @@ class VotingRatioTypeSwitcherController extends GetxController {
   }
 }
 
-class VotingRatioTypeSwitcher extends GetView<VotingRatioTypeSwitcherController>
-    with StandaloneControllerMixin {
-  final SummarizedVoting voting;
+class VotingRatioTypeSwitcher
+    extends GetView<VotingRatioTypeSwitcherController> {
+  @override
+  String get tag => voting.caseVote.votingId.toString();
 
   const VotingRatioTypeSwitcher({super.key, required this.voting});
+  final SummarizedVoting voting;
 
   // bool get vertical =>
   //     Get.context!.responsiveValue(mobile: true, desktop: false);
@@ -50,15 +50,12 @@ class VotingRatioTypeSwitcher extends GetView<VotingRatioTypeSwitcherController>
     vertical: true,
   );
 
-  Widget detailedVotingInfoBuilder(VotingResult detailedVoting) => VotingRatio(
-    key: ValueKey(detailedVoting.votingId),
-    representativeVotingResult: detailedVoting.results,
-    vertical: true,
-  );
+  Widget detailedVotingInfoBuilder(VotingResult votingResult) =>
+      VotingRatio(votingResult: votingResult, vertical: true);
 
   @override
   Widget build(BuildContext context) {
-    control(VotingRatioTypeSwitcherController(voting));
+    Get.put(VotingRatioTypeSwitcherController(voting), tag: tag);
 
     return Column(
       spacing: 1.unit,
@@ -76,24 +73,22 @@ class VotingRatioTypeSwitcher extends GetView<VotingRatioTypeSwitcherController>
             return Loading(
               value: controller.votingResult,
               builder:
-                  (votingResult) => VotingRatio(
-                    key: ValueKey(votingResult.votingId),
-                    representativeVotingResult: votingResult.results,
-                    vertical: true,
-                  ),
+                  (votingResult) =>
+                      VotingRatio(votingResult: votingResult, vertical: true),
             );
           }),
         ),
         Show(
           controller.showSimple,
           negate: true,
-          builder: () => Loading(
-            value: controller.votingResult,
-            builder:
-                (votingResult) => SeatingChart(
-                  representativeVotingResult: votingResult.results,
-                ),
-          ),
+          builder:
+              () => Loading(
+                value: controller.votingResult,
+                builder:
+                    (votingResult) => SeatingChart(
+                      representativeVotingResult: votingResult.results,
+                    ),
+              ),
         ),
       ],
     );

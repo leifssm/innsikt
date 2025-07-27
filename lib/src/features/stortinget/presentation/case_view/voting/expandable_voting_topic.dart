@@ -9,7 +9,6 @@ import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/si
 import 'package:innsikt/src/features/stortinget/presentation/case_view/voting/voting_ratio.dart';
 import 'package:innsikt/src/utils/extensions/getx.dart';
 import 'package:innsikt/src/utils/extensions/units.dart';
-import 'package:innsikt/src/utils/standalone_controller_mixin.dart';
 
 class ExpandableVotingTopicController extends GetxController {
   ExpandableVotingTopicController(this.voting);
@@ -32,8 +31,7 @@ class ExpandableVotingTopicController extends GetxController {
   }
 }
 
-class ExpandableVotingTopic extends GetView<ExpandableVotingTopicController>
-    with StandaloneControllerMixin {
+class ExpandableVotingTopic extends GetView<ExpandableVotingTopicController> {
   final SummarizedVoting voting;
 
   @override
@@ -46,9 +44,7 @@ class ExpandableVotingTopic extends GetView<ExpandableVotingTopicController>
     Get.put(ExpandableVotingTopicController(voting), tag: tag);
 
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: 600,
-      ),
+      constraints: BoxConstraints(maxWidth: 600),
       child: Card(
         child: Padding(
           padding: EdgeInsets.all(1.unit),
@@ -107,9 +103,7 @@ class ExpandableVotingTopic extends GetView<ExpandableVotingTopicController>
                             SizedBox(
                               height: 80,
                               child: VotingRatio(
-                                key: ValueKey(votingResult.votingId),
-                                representativeVotingResult:
-                                    votingResult.results,
+                                votingResult: votingResult,
                                 vertical: true,
                               ),
                             ),
